@@ -1,0 +1,176 @@
+{
+  "name": "Sheets to Gmail AI Respoonder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1iYXFhdpKYR9_e1qqJ8zOsvIai8dPoJG8K-VxtURiLg4",
+          "mode": "list",
+          "cachedResultName": "Resume sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iYXFhdpKYR9_e1qqJ8zOsvIai8dPoJG8K-VxtURiLg4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 287579352,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iYXFhdpKYR9_e1qqJ8zOsvIai8dPoJG8K-VxtURiLg4/edit#gid=287579352"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "9f41e1db-b127-4cbe-99d6-7780b2337c1d",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "fE1rT0XWq99OUOFt",
+          "name": "Google Sheets Trigger account 4"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        224,
+        112
+      ],
+      "id": "83de23cc-f9f9-474e-bb48-635b4eae8ea4",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a short, clean, single-paragraph email notification for a new Google Sheet entry. Do not include markdown headers, bullet points, options, or extra conversational text.\n\nInput Details:\n- Name: {{ $json[\"Name\"] }}\n- Email: {{ $json[\"Email\"] }}\n- Contact: {{ $json[\"Contact\"] }}\n\nStrict Output Format to follow:\nHi, A new entry was added/updated in the sheet: Name: {{ $json[\"Name\"] }}, Email: {{ $json[\"Email\"] }}, Contact: {{ $json[\"Contact\"] }}. Regards, Shreya Pandey",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        464,
+        -32
+      ],
+      "id": "3b40b559-9749-44c9-835b-3b67bf8baa35",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        192
+      ],
+      "id": "f23a1a9d-92f6-42a9-972f-fbef0c27817e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jYUwQd92P5QhP4er",
+          "name": "Google Gemini(PaLM) Api account 9"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nandu00089@gmail.com",
+        "subject": "New Google Sheet Row Updated",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        -32
+      ],
+      "id": "b212aaa3-f1be-4015-8155-cabf52b24d56",
+      "name": "Send a message",
+      "webhookId": "31a4a4ad-96b8-4776-a90e-7d8fcb030f3a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Bn4Coos3PtlysBby",
+          "name": "Gmail account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ea540aa5-e27e-4944-b8a2-f4ca819fc197",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "oqjJcBRGMkHhFwjH",
+  "tags": []
+}
