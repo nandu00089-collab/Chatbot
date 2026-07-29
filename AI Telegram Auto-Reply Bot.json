@@ -1,0 +1,193 @@
+{
+  "name": "AI Telegram Auto-Reply Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2b6ce6e4-9b10-482a-bb86-0059c6170b62",
+      "name": "Telegram Trigger",
+      "webhookId": "c29f8199-1866-486f-9284-9774f1751732",
+      "credentials": {
+        "telegramApi": {
+          "id": "5B237BoBVqPBdNxl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a smart, fast, and helpful AI assistant integrated with a Telegram bot.\n{{ $json.message.text }}\nYour role:\n- Respond instantly (no delays, no long thinking pauses)\n- Keep replies short, clear, and conversational\n- Be helpful, practical, and to the point\n- Avoid unnecessary explanations unless asked\n\nResponse style:\n- Use simple English\n- Keep most replies under 100 words\n- Use bullet points when helpful\n- If the user asks something complex, break it into steps\n\nBehavior rules:\n1. If the message is unclear -> ask a short clarifying question\n2. If the user asks for steps -> give step-by-step instructions\n3. If the user asks for ideas -> give 3-5 solid suggestions\n4. If the user asks for content (captions, messages, etc.) -> give ready-to-copy output\n5. If the request is outside your knowledge -> say \"I'm not sure, but here's what I suggest...\"\n\nTelegram-specific behavior:\n- Be friendly but not overly casual\n- Avoid long paragraphs\n- Format for mobile readability\n- Use emojis sparingly (only when useful)\n\nContext awareness:\n- Remember previous messages in the conversation\n- Use context to give better answers\n\nOutput format:\n- Plain text (no markdown symbols like ** or ### unless necessary)\n- Clean and readable\n\nSpecial capability:\nIf the user intent matches one of these, respond accordingly:\n- \"business idea\" -> give profitable, practical ideas\n- \"content idea\" -> give viral-style ideas\n- \"automation\" -> suggest tools + steps (n8n, Zapier, etc.)\n- \"money\" -> give realistic earning methods (no scams)\n\nGoal:\nHelp the user quickly, clearly, and effectively—like a smart assistant in their pocket.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "abcc1013-4d16-4a7e-9181-fcb9f5b4238d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-image",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        176
+      ],
+      "id": "66d593a6-c134-4997-87d1-2ef84423f2ce",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "U2NJlAsR6Mju2rt7",
+          "name": "Google Gemini(PaLM) Api account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "c71dd159-1a36-4cbf-9c7e-94513837232e",
+      "name": "Send a text message",
+      "webhookId": "e6c0c77c-62f3-4624-8aa2-24b44440107b",
+      "credentials": {
+        "telegramApi": {
+          "id": "5B237BoBVqPBdNxl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.message_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        208
+      ],
+      "id": "ec1b7e3a-c8c0-4873-84cb-b4a3660346d8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        480,
+        192
+      ],
+      "id": "c5e593a9-be1b-4bf4-ac5a-019b963c25d9",
+      "name": "SerpApi",
+      "credentials": {
+        "serpApi": {
+          "id": "8vB3uoUV8PM5yMh2",
+          "name": "SerpApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ffa30cf4-b636-42d1-b4f5-64907741cb1b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "LlWg3329yzHkNJeI",
+  "tags": []
+}
