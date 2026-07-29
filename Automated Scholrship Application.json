@@ -1,0 +1,212 @@
+{
+  "name": "Automated Scholrship Application",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Scholarship",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name"
+            },
+            {
+              "fieldLabel": "Last Name"
+            },
+            {
+              "fieldLabel": "Percentage"
+            },
+            {
+              "fieldLabel": "Phone Number"
+            },
+            {
+              "fieldLabel": "Email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7818ba48-06cd-4165-9390-abe099e3ab7e",
+      "name": "On form submission",
+      "webhookId": "3130e933-4a63-42cb-bcc6-cbb2c5b47dcb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dfb92d2e-7a22-4cfe-97b2-291b3efe59cc",
+              "name": "",
+              "value": "={{ Number($json.Percentage) >= 80 && Number($json.Percentage) <= 90 ? \"Eligible\" : \"Not Eligible\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "435e4869-8b7d-46ad-8af6-50362012dbd1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5339bd23-f96b-4424-b1dd-a811aa93e14c",
+              "leftValue": "={{ Number($json.Percentage) }}",
+              "rightValue": 80,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "9abbb916-c831-4c62-9609-894b863e871c",
+              "leftValue": "={{ Number($json.Percentage) }}",
+              "rightValue": 90,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d5c46055-cf5b-4848-b100-759c0fc75bf7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "nandu00089@gmail.com",
+        "subject": "🎉 Congratulations! You are Eligible for the Scholarship",
+        "message": "=<h1>Congratulations, {{ $('On form submission').item.json['First Name'] }}!</h2>  <p>We are pleased to inform you that you have been selected for the scholarship.</p>  <p><b>Your Details:</b></p>  <ul>   <li><b>Name:</b> {{ $('On form submission').item.json['First Name'] }} {{ $('On form submission').item.json['Last Name'] }}</li>   <li><b>Percentage:</b> {{ $('On form submission').item.json.Percentage }}%</li> </ul>  <p>Your application has successfully met the eligibility criteria (80% or above).</p>  <p>Our team will contact you shortly with the next steps.</p>  <br>  <p>Regards,<br> Scholarship Committee</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "72b2a65f-fd9e-4b89-b9d8-981a1fafc53d",
+      "name": "Send a message",
+      "webhookId": "d0aecdd6-b161-41ac-9c85-a91895347a50",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Bn4Coos3PtlysBby",
+          "name": "Gmail account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nandu00089@gmail.com",
+        "subject": "Scholarship Application Result",
+        "message": "=<h2>Dear {{ $('On form submission').item.json['First Name'] }},</h2>  <p>Thank you for applying for the scholarship.</p>  <p>After reviewing your application, we regret to inform you that you are not eligible for the scholarship because the minimum required percentage is <b>80%</b>.</p>  <p><b>Your Percentage:</b> {{ $('On form submission').item.json.Percentage }}%</p>  <p>We encourage you to apply again in the future.</p>  <br>  <p>Regards,<br> Scholarship Committee</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "d5cbd5fb-37a0-4991-bf39-e933ee8c8e13",
+      "name": "Send a message1",
+      "webhookId": "2cf16d2e-429e-4aac-bec0-ce3c8f7e0c00",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Bn4Coos3PtlysBby",
+          "name": "Gmail account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2463d200-0cce-43c3-a800-48b408e8a46f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "xzw10dJCu6WdBJOA",
+  "tags": []
+}
