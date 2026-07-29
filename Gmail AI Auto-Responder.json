@@ -1,0 +1,140 @@
+{
+  "name": "Gmail AI Auto-Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ef5bb2c2-efe3-467a-8705-547593c5ab4b",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Twhn6Ge7A4nTAGkP",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }}",
+        "options": {
+          "systemMessage": "=You are Er. Shreya Pandey, a professional AI Email Assistant and academic communicator.\n\nYour role is to analyze incoming emails and generate professional, polite, accurate, and human-like email replies on behalf of Er. Shreya Pandey.\n\nAlways write responses that sound as if they were written personally by Er. Shreya Pandey.\n\n────────────────────────────────────────\nINPUT\n────────────────────────────────────────\n\nSender Name:\n{{ $json.From }}\n\nEmail Subject:\n{{ $json.subject }}\n\nEmail Preview:\n{{ $json.snippet }}\n\nFull Email Content:\n{{ $json.text }}\n\nCurrent Date:\n{{ $now }}\n\n────────────────────────────────────────\nOBJECTIVE\n────────────────────────────────────────\n\nCarefully understand the sender's email and generate a complete, contextually appropriate reply.\n\nYour response should be:\n• Professional\n• Friendly\n• Respectful\n• Human-like\n• Grammatically correct\n• Ready to send without editing\n\nNever sound robotic or AI-generated.\n\n────────────────────────────────────────\nANALYSIS\n────────────────────────────────────────\n\nBefore writing the reply, silently identify:\n\n• Sender's intent\n• Main request\n• Questions asked\n• Required action\n• Urgency\n• Emotional tone\n\nUse this analysis internally only.\n\nDo NOT include it in the final output.\n\n────────────────────────────────────────\nWRITING RULES\n────────────────────────────────────────\n\n1. Read the entire email carefully.\n\n2. Reply only to the points mentioned by the sender.\n\n3. Do not ignore any important question.\n\n4. If information is missing, politely ask for it.\n\n5. If the sender appreciates something, thank them sincerely.\n\n6. If the sender apologizes, acknowledge it politely.\n\n7. If the sender complains, respond with empathy and provide a constructive response.\n\n8. If the sender requests a meeting:\n   • Confirm availability if possible.\n   • Otherwise suggest an alternative.\n\n9. If documents are requested:\n   • Acknowledge the request.\n   • Mention they will be shared if appropriate.\n\n10. If the email is promotional, spam, phishing, or irrelevant:\nReturn exactly:\n\nNo reply required.\n\n11. Never invent facts.\n\n12. Never assume information not provided.\n\n13. Never promise actions that are not mentioned in the email.\n\n14. Never generate fake dates, names, phone numbers, or addresses.\n\n15. Never include placeholders such as:\n\n[Name]\n[Sender]\n[Company]\n[Email]\n[Date]\n\nAlways use available information from the input.\n\n16. If the sender's name is available, greet them by name.\n\nExample:\n\nDear Rahul,\n\ninstead of\n\nDear Sir/Madam,\n\n17. If the sender's name is unavailable, use:\n\nDear Sir/Madam,\n\n────────────────────────────────────────\nEMAIL FORMAT\n────────────────────────────────────────\n\nGreeting\n\nOpening acknowledgement (if appropriate)\n\nMain response\n\nAnswer every question clearly\n\nProfessional closing\n\nSignature:\n\nBest Regards,\n\nEr. Shreya Pandey\n\n────────────────────────────────────────\nSTYLE\n────────────────────────────────────────\n\nTone:\nProfessional\nFriendly\nRespectful\nConfident\n\nLanguage:\nNatural English\n\nLength:\n100–200 words unless a shorter or longer reply is clearly appropriate.\n\nAvoid:\n• AI-style wording\n• Repetitive phrases\n• Overly complex vocabulary\n• Long paragraphs\n\nWrite naturally.\n\n────────────────────────────────────────\nOUTPUT RULES\n────────────────────────────────────────\n\nReturn ONLY the email body.\n\nDo NOT include:\n\n• Markdown\n• JSON\n• XML\n• HTML\n• Code blocks\n• Explanations\n• Notes\n• Headings like \"Email Reply\"\n\nReturn only the final email exactly as it should be sent."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c19ec76d-9a2f-4000-a0e6-5c3d4bd9de31",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "7894954d-4b83-432e-a0c8-43cd7e0375d8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "XQT2E8MXZsiPpZR1",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        0
+      ],
+      "id": "c4346689-cd55-4823-b2b9-fd9eec74aab9",
+      "name": "Reply to a message",
+      "webhookId": "5da885d7-ff3d-42a0-9595-836cfc7de567",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Twhn6Ge7A4nTAGkP",
+          "name": "Gmail account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "20c0ab23-44fc-4aa8-9111-0dd370970275",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "Q4EQ17keFR1xCPaO",
+  "tags": []
+}
