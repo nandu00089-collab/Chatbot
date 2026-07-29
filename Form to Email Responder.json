@@ -1,0 +1,91 @@
+{
+  "name": "Form to Email Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Agetic Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Contact"
+            },
+            {
+              "fieldLabel": "Branch"
+            },
+            {
+              "fieldLabel": "Email"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "65e08acb-116f-4d92-a7e8-521f061aa79e",
+      "name": "On form submission",
+      "webhookId": "5d8c2682-89f2-4626-a1f1-dd9901810c3c"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Testing n8n",
+        "message": "Thanks for filling this form",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9f353322-1026-4bc7-b2be-9db2b73299a0",
+      "name": "Send a message",
+      "webhookId": "08dbab92-1662-42b7-ad45-ed6f9710de9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WVBt3GEmajNR9rQd",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0711b2ca-ec36-4cf8-82a1-fcba2510de26",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "2YR1EwGmZNT99Asm",
+  "tags": []
+}
