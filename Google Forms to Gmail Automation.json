@@ -1,0 +1,150 @@
+{
+  "name": "Google Forms to Gmail Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact Us",
+        "formDescription": "Customer  detail",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Email"
+            },
+            {
+              "fieldLabel": "Issue"
+            },
+            {
+              "fieldLabel": "Contact"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "73e28668-d940-44c3-b67d-e3934a91460c",
+      "name": "On form submission",
+      "webhookId": "33678e13-6a86-433a-bb9f-4aa166777d21"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.Issue }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4d4f3155-bd41-4fdd-89c5-de6f8c95fb30",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Thanks for filling this form",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "b530a571-d979-4604-b1f1-c2014d28c1c4",
+      "name": "Send a message",
+      "webhookId": "cc012b5d-7ffe-4881-9b70-131319131251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WVBt3GEmajNR9rQd",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "b249118d-0935-4328-b61e-fd6eb0eee5ca",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KDji7lvaeseMZcfU",
+          "name": "Google Gemini(PaLM) Api account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d82d7780-283c-4e6c-87a8-48769a369995",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "pOUPaoC09eJqJZEM",
+  "tags": []
+}
