@@ -1,0 +1,160 @@
+{
+  "name": "AI Caption Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "33e2eb21-b659-42ed-9e38-1ccdbf140f02",
+      "name": "Telegram Trigger",
+      "webhookId": "c434196a-4b75-4351-b966-f9315fdc3c79",
+      "credentials": {
+        "telegramApi": {
+          "id": "SUkxYMEsjYuXcTZk",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert AI social media copywriter and viral content strategist.\n\nYour task is to generate highly engaging social media captions based on the user's request.\n\nRules:\n- Create platform-optimized captions\n- Use attention-grabbing hooks\n- Add relevant emojis naturally\n- Include a strong CTA (Call To Action)\n- Generate 10 highly relevant hashtags\n- Make captions emotionally engaging\n- Adapt writing style based on user tone\n- Keep content modern and viral-friendly\n- Avoid generic marketing language\n- Return ONLY the final caption\n- Do not explain anything\n\nCaption Style Rules:\n\nInstagram:\n- More emojis\n- Emotional storytelling\n- Short readable paragraphs\n- Viral hashtags\n\nLinkedIn:\n- Professional tone\n- Authority-based writing\n- Business-focused CTA\n- Minimal emojis\n\nTwitter/X:\n- Short and punchy\n- Highly engaging hook\n- Trendy style\n- Minimal hashtags\n\nUser Request:\n{{ $json.message.text }}\n\nReturn ONLY valid JSON.\n\nExample format:\n\n{\n  \"instagram\": \"Instagram caption here\",\n  \"linkedin\": \"LinkedIn caption here\",\n  \"twitter\": \"Twitter caption here\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "abd9b9b4-d0d5-4215-a342-90fdf98dd35b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        208
+      ],
+      "id": "e55c62c9-294a-4982-aa4b-987448e7803e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "U2NJlAsR6Mju2rt7",
+          "name": "Google Gemini(PaLM) Api account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse AI JSON output safely\nconst data = JSON.parse($json.output);\n\n// Return separated fields\nreturn [\n  {\n    json: {\n      instagram: data.instagram || \"\",\n      linkedin: data.linkedin || \"\",\n      twitter: data.twitter || \"\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "57f6c4b2-ffa7-4a55-90d6-d8595ed6ca96",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Instagram\n\n{{ $json.instagram }}\n\nLinkedin\n\n{{ $json.linkedin }}\n\nTwitter\n\n{{ $json.twitter }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        0
+      ],
+      "id": "91ed46f9-8457-4741-b5d6-a2b62fefd33a",
+      "name": "Send a text message",
+      "webhookId": "332893bf-24ee-4cf9-98eb-880b0fb558dc",
+      "credentials": {
+        "telegramApi": {
+          "id": "SUkxYMEsjYuXcTZk",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "45222e51-98d3-4154-99bb-13ce70333f03",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "vzlwvVvPckGgL1lC",
+  "tags": []
+}
