@@ -1,0 +1,105 @@
+{
+  "name": "Weather Update Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "55c1a526-f2e4-4bae-8a4d-bb09468f4a9a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "cityName": "Gorakhpur"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "581808d6-5ad2-46db-bdc8-c5f98d037282",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "hvu5RcRP5ZM1zUqC",
+          "name": "OpenWeatherMap account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nandu00089@gmail.com",
+        "subject": "Daily Weather",
+        "message": "=<h2>🌤 Daily Weather Report</h2>  <p><b>City:</b> Gorakhpur</p> <p>🌡 <b>Current Temperature:</b> {{ $json.main.temp }} °C</p> <p>🔻 <b>Minimum Temperature:</b> {{ $json.main.temp_min }} °C</p> <p>🔺 <b>Maximum Temperature:</b> {{ $json.main.temp_max }} °C</p> <p>💨 <b>Wind Speed:</b> {{ $json.wind.speed }} m/s</p>  <p>Have a great day! 😊</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ebfd74e7-1782-40a2-aa2c-860f9b96f7b0",
+      "name": "Send a message",
+      "webhookId": "3faa0eb2-cc23-4d06-848d-825a3edc35f6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Bn4Coos3PtlysBby",
+          "name": "Gmail account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e5c48ead-908d-4ffc-937a-1a55607c4e92",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4a93ad46a6a1ca4de6d82ab8fc06b280787558186586c407b7748bbcc217a5d"
+  },
+  "nodeGroups": [],
+  "id": "NfgNpgUwh9cfuey1",
+  "tags": []
+}
